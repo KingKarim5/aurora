@@ -1,0 +1,66 @@
+from contextlib import asynccontextmanager
+
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+
+from app.api.routes import (
+    appointments,
+    auth,
+    customers,
+    dashboard,
+    diagnostics,
+    invoices,
+    job_cards,
+    parts,
+    vehicles,
+)
+from app.core.config import get_settings
+from app.db.base import Base
+from app.db.seed import seed_initial_data
+from app.db.session import SessionLocal, engine
+
+settings = get_settings()
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # In development, create tables directly; in production run `alembic upgrade head`.
+    if settings.environment == "development":
+        Base.metadata.create_all(bind=engine)
+    with SessionLocal() as db:
+        seed_initial_data(db)
+    yield
+
+
+app = FastAPI(
+    title=f"{settings.app_name} API",
+    description="Automotive Unified Resource, Operations, Repair & Analytics platform.",
+    version="0.1.0",
+    lifespan=lifespan,
+)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=settings.cors_origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+for router in (
+    auth.router,
+    customers.router,
+    vehicles.router,
+    job_cards.router,
+    parts.router,
+    invoices.router,
+    appointments.router,
+    diagnostics.router,
+    dashboard.router,
+):
+    app.include_router(router, prefix=settings.api_v1_prefix)
+
+
+@app.get("/health", tags=["health"])
+def health():
+    return {"status": "ok", "app": settings.app_name, "environment": settings.environment}
