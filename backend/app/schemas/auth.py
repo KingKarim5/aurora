@@ -15,6 +15,10 @@ class RefreshRequest(BaseModel):
     refresh_token: str
 
 
+class GoogleLoginRequest(BaseModel):
+    credential: str
+
+
 class UserCreate(BaseModel):
     email: EmailStr
     full_name: str = Field(min_length=1, max_length=255)

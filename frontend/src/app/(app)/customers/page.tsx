@@ -51,7 +51,7 @@ export default function CustomersPage() {
       </PageHeader>
 
       {showForm && (
-        <form onSubmit={onCreate} className="mb-6 grid max-w-2xl grid-cols-2 gap-3 rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+        <form onSubmit={onCreate} className="mb-6 grid max-w-2xl grid-cols-2 gap-3 glass rounded-2xl p-5">
           {error && <div className="col-span-2"><ErrorNote message={error} /></div>}
           <input className={inputCls} placeholder="Full name *" required
             value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} />
@@ -78,12 +78,12 @@ export default function CustomersPage() {
         <Empty message="No customers found." />
       ) : (
         <TableShell>
-          <thead className="bg-slate-50">
+          <thead className="bg-white/[0.03]">
             <tr><Th>Name</Th><Th>Phone</Th><Th>Email</Th><Th>Address</Th></tr>
           </thead>
-          <tbody className="divide-y divide-slate-100">
+          <tbody className="divide-y divide-white/5">
             {customers.map((c) => (
-              <tr key={c.id} className="hover:bg-slate-50">
+              <tr key={c.id} className="hover:bg-white/[0.04]">
                 <Td>{c.name}</Td>
                 <Td>{c.phone}</Td>
                 <Td>{c.email ?? "—"}</Td>

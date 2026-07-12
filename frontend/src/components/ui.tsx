@@ -5,18 +5,14 @@ import { ReactNode } from "react";
 export function PageHeader({ title, children }: { title: string; children?: ReactNode }) {
   return (
     <div className="mb-6 flex items-center justify-between">
-      <h1 className="text-xl font-bold tracking-tight">{title}</h1>
+      <h1 className="font-display text-2xl font-bold tracking-tight text-white">{title}</h1>
       {children}
     </div>
   );
 }
 
 export function Card({ children, className = "" }: { children: ReactNode; className?: string }) {
-  return (
-    <div className={`rounded-xl border border-slate-200 bg-white p-5 shadow-sm ${className}`}>
-      {children}
-    </div>
-  );
+  return <div className={`glass rounded-2xl p-5 ${className}`}>{children}</div>;
 }
 
 export function StatCard({ label, value, accent = false }: {
@@ -25,34 +21,46 @@ export function StatCard({ label, value, accent = false }: {
   accent?: boolean;
 }) {
   return (
-    <Card>
-      <p className="text-xs font-medium uppercase tracking-wide text-slate-500">{label}</p>
-      <p className={`mt-1 text-2xl font-bold ${accent ? "text-sky-600" : ""}`}>{value}</p>
-    </Card>
+    <div
+      className={`glass rounded-2xl p-5 transition-transform duration-200 hover:-translate-y-0.5 ${
+        accent ? "glow-accent" : ""
+      }`}
+    >
+      <p className="text-xs font-medium uppercase tracking-widest text-slate-400">{label}</p>
+      <p
+        className={`font-display mt-2 text-3xl font-bold tracking-tight ${
+          accent ? "text-gradient" : "text-white"
+        }`}
+      >
+        {value}
+      </p>
+    </div>
   );
 }
 
 const BADGE_COLORS: Record<string, string> = {
-  open: "bg-blue-100 text-blue-800",
-  in_progress: "bg-amber-100 text-amber-800",
-  awaiting_parts: "bg-purple-100 text-purple-800",
-  completed: "bg-emerald-100 text-emerald-800",
-  invoiced: "bg-slate-200 text-slate-700",
-  cancelled: "bg-slate-100 text-slate-500",
-  unpaid: "bg-red-100 text-red-700",
-  partially_paid: "bg-amber-100 text-amber-800",
-  paid: "bg-emerald-100 text-emerald-800",
-  void: "bg-slate-100 text-slate-500",
-  good: "bg-emerald-100 text-emerald-800",
-  attention: "bg-amber-100 text-amber-800",
-  critical: "bg-red-100 text-red-700",
-  unknown: "bg-slate-100 text-slate-500",
+  open: "bg-sky-400/15 text-sky-300 ring-sky-400/30",
+  in_progress: "bg-amber-400/15 text-amber-300 ring-amber-400/30",
+  awaiting_parts: "bg-purple-400/15 text-purple-300 ring-purple-400/30",
+  completed: "bg-emerald-400/15 text-emerald-300 ring-emerald-400/30",
+  invoiced: "bg-slate-400/15 text-slate-300 ring-slate-400/30",
+  cancelled: "bg-slate-500/10 text-slate-500 ring-slate-500/20",
+  unpaid: "bg-red-400/15 text-red-300 ring-red-400/30",
+  partially_paid: "bg-amber-400/15 text-amber-300 ring-amber-400/30",
+  paid: "bg-emerald-400/15 text-emerald-300 ring-emerald-400/30",
+  void: "bg-slate-500/10 text-slate-500 ring-slate-500/20",
+  good: "bg-emerald-400/15 text-emerald-300 ring-emerald-400/30",
+  attention: "bg-amber-400/15 text-amber-300 ring-amber-400/30",
+  critical: "bg-red-400/15 text-red-300 ring-red-400/30",
+  unknown: "bg-slate-500/10 text-slate-400 ring-slate-500/20",
 };
 
 export function Badge({ value }: { value: string }) {
-  const color = BADGE_COLORS[value] ?? "bg-slate-100 text-slate-700";
+  const color = BADGE_COLORS[value] ?? "bg-slate-500/10 text-slate-300 ring-slate-500/20";
   return (
-    <span className={`inline-block rounded-full px-2.5 py-0.5 text-xs font-semibold ${color}`}>
+    <span
+      className={`inline-block rounded-full px-2.5 py-0.5 text-xs font-semibold ring-1 ${color}`}
+    >
       {value.replaceAll("_", " ")}
     </span>
   );
@@ -60,41 +68,55 @@ export function Badge({ value }: { value: string }) {
 
 export function Th({ children }: { children?: ReactNode }) {
   return (
-    <th className="px-4 py-2 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
+    <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-widest text-slate-400">
       {children}
     </th>
   );
 }
 
 export function Td({ children }: { children?: ReactNode }) {
-  return <td className="px-4 py-3 text-sm">{children}</td>;
+  return <td className="px-4 py-3 text-sm text-slate-200">{children}</td>;
 }
 
 export function TableShell({ children }: { children: ReactNode }) {
   return (
-    <div className="overflow-x-auto rounded-xl border border-slate-200 bg-white shadow-sm">
-      <table className="min-w-full divide-y divide-slate-200">{children}</table>
+    <div className="glass overflow-x-auto rounded-2xl">
+      <table className="min-w-full divide-y divide-white/10">{children}</table>
     </div>
   );
 }
 
 export function ErrorNote({ message }: { message: string }) {
   return (
-    <p className="mb-4 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">{message}</p>
+    <p className="mb-4 rounded-lg bg-red-400/10 px-3 py-2 text-sm text-red-300 ring-1 ring-red-400/25">
+      {message}
+    </p>
   );
 }
 
 export function Loading() {
-  return <p className="py-10 text-center text-sm text-slate-500">Loading…</p>;
+  return (
+    <div className="flex items-center justify-center gap-3 py-14 text-sm text-slate-400">
+      <span className="h-2 w-2 animate-pulse-glow rounded-full bg-sky-400" />
+      Loading…
+    </div>
+  );
 }
 
 export function Empty({ message }: { message: string }) {
-  return <p className="py-10 text-center text-sm text-slate-400">{message}</p>;
+  return <p className="py-14 text-center text-sm text-slate-500">{message}</p>;
 }
 
+/* Shared table fragments */
+export const theadCls = "bg-white/[0.03]";
+export const rowCls = "transition-colors hover:bg-white/[0.04]";
+export const tbodyCls = "divide-y divide-white/5";
+
+/* Shared form/control styles */
+export const formCardCls = "glass rounded-2xl p-5";
 export const inputCls =
-  "w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-sky-500 focus:outline-none";
+  "w-full rounded-lg border border-white/10 bg-white/[0.04] px-3 py-2 text-sm text-slate-100 placeholder:text-slate-500 focus:border-sky-400/60 focus:bg-white/[0.06] focus:outline-none focus:ring-1 focus:ring-sky-400/40";
 export const btnCls =
-  "rounded-lg bg-sky-600 px-4 py-2 text-sm font-semibold text-white hover:bg-sky-700 disabled:opacity-50";
+  "rounded-lg bg-gradient-to-r from-sky-500 to-cyan-400 px-4 py-2 text-sm font-semibold text-slate-950 shadow-[0_6px_24px_-6px_rgba(56,189,248,0.5)] transition hover:brightness-110 disabled:opacity-50";
 export const btnGhostCls =
-  "rounded-lg border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50";
+  "rounded-lg border border-white/15 px-4 py-2 text-sm font-semibold text-slate-200 transition hover:border-white/30 hover:bg-white/5";

@@ -56,7 +56,7 @@ export default function PartsPage() {
       </PageHeader>
 
       {showForm && (
-        <form onSubmit={onCreate} className="mb-6 grid max-w-3xl grid-cols-2 gap-3 rounded-xl border border-slate-200 bg-white p-5 shadow-sm md:grid-cols-4">
+        <form onSubmit={onCreate} className="mb-6 grid max-w-3xl grid-cols-2 gap-3 glass rounded-2xl p-5 md:grid-cols-4">
           {error && <div className="col-span-full"><ErrorNote message={error} /></div>}
           <input className={inputCls} placeholder="SKU *" required value={form.sku}
             onChange={(e) => setForm({ ...form, sku: e.target.value })} />
@@ -83,23 +83,23 @@ export default function PartsPage() {
         <Empty message="No parts in inventory." />
       ) : (
         <TableShell>
-          <thead className="bg-slate-50">
+          <thead className="bg-white/[0.03]">
             <tr>
               <Th>SKU</Th><Th>Name</Th><Th>Category</Th><Th>Stock</Th><Th>Price</Th><Th>Supplier</Th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-slate-100">
+          <tbody className="divide-y divide-white/5">
             {parts.map((p) => (
-              <tr key={p.id} className="hover:bg-slate-50">
+              <tr key={p.id} className="hover:bg-white/[0.04]">
                 <Td>{p.sku}</Td>
                 <Td>{p.name}</Td>
                 <Td>{p.category}</Td>
                 <Td>
-                  <span className={p.quantity <= p.reorder_level ? "font-bold text-red-600" : ""}>
+                  <span className={p.quantity <= p.reorder_level ? "font-bold text-red-300" : ""}>
                     {p.quantity}
                   </span>
                   {p.quantity <= p.reorder_level && (
-                    <span className="ml-2 text-xs text-red-500">low stock</span>
+                    <span className="ml-2 text-xs text-red-400">low stock</span>
                   )}
                 </Td>
                 <Td>${p.unit_price}</Td>

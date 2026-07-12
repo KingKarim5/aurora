@@ -1,3 +1,4 @@
+import secrets
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException, status
@@ -5,6 +6,7 @@ from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy import select
 
 from app.api.deps import AdminOnly, CurrentUser, DbSession
+from app.core.config import get_settings
 from app.core.security import (
     create_access_token,
     create_refresh_token,
@@ -12,8 +14,16 @@ from app.core.security import (
     hash_password,
     verify_password,
 )
-from app.models.user import User
-from app.schemas.auth import RefreshRequest, Token, UserCreate, UserOut, UserUpdate
+from app.models.user import User, UserRole
+from app.schemas.auth import (
+    GoogleLoginRequest,
+    RefreshRequest,
+    Token,
+    UserCreate,
+    UserOut,
+    UserUpdate,
+)
+from app.services.google_auth import verify_google_id_token
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
@@ -25,6 +35,43 @@ def login(db: DbSession, form: Annotated[OAuth2PasswordRequestForm, Depends()]):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED, detail="Incorrect email or password"
         )
+    if not user.is_active:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Account disabled")
+    return Token(
+        access_token=create_access_token(str(user.id)),
+        refresh_token=create_refresh_token(str(user.id)),
+    )
+
+
+@router.post("/google", response_model=Token)
+def google_login(db: DbSession, body: GoogleLoginRequest):
+    settings = get_settings()
+    if not settings.google_client_id:
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="Google sign-in is not configured",
+        )
+    claims = verify_google_id_token(body.credential, settings.google_client_id)
+    if claims is None:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid Google credential"
+        )
+
+    email = claims["email"].lower()
+    user = db.scalar(select(User).where(User.email == email))
+    if user is None:
+        # First Google sign-in: provision a least-privilege account. The random
+        # password is unrecoverable; the account is usable via Google only
+        # until an admin sets a password.
+        user = User(
+            email=email,
+            full_name=claims.get("name") or email.split("@")[0],
+            hashed_password=hash_password(secrets.token_urlsafe(32)),
+            role=UserRole.MECHANIC,
+        )
+        db.add(user)
+        db.commit()
+        db.refresh(user)
     if not user.is_active:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Account disabled")
     return Token(

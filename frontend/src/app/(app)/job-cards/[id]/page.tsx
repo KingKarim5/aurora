@@ -93,17 +93,17 @@ export default function JobCardDetailPage({ params }: { params: Promise<{ id: st
       <div className="grid gap-6 lg:grid-cols-3">
         <Card className="lg:col-span-2">
           <h2 className="mb-3 font-semibold">Complaint</h2>
-          <p className="mb-4 text-sm text-slate-700">{jobCard.complaint}</p>
+          <p className="mb-4 text-sm text-slate-300">{jobCard.complaint}</p>
 
           <h2 className="mb-3 font-semibold">Items</h2>
           {jobCard.items.length === 0 ? (
             <p className="mb-4 text-sm text-slate-400">No items yet.</p>
           ) : (
-            <table className="mb-4 min-w-full divide-y divide-slate-200">
+            <table className="mb-4 min-w-full divide-y divide-white/10">
               <thead>
                 <tr><Th>Type</Th><Th>Description</Th><Th>Qty</Th><Th>Price</Th><Th>Total</Th></tr>
               </thead>
-              <tbody className="divide-y divide-slate-100">
+              <tbody className="divide-y divide-white/5">
                 {jobCard.items.map((it) => (
                   <tr key={it.id}>
                     <Td>{it.item_type}</Td>
@@ -119,7 +119,7 @@ export default function JobCardDetailPage({ params }: { params: Promise<{ id: st
           <p className="text-right text-lg font-bold">Total: ${jobCard.total}</p>
 
           {editable && (
-            <form onSubmit={addItem} className="mt-4 grid grid-cols-2 gap-3 border-t border-slate-100 pt-4 md:grid-cols-5">
+            <form onSubmit={addItem} className="mt-4 grid grid-cols-2 gap-3 border-t border-white/5 pt-4 md:grid-cols-5">
               <select className={inputCls} value={item.item_type}
                 onChange={(e) => setItem({ ...item, item_type: e.target.value })}>
                 <option value="labor">Labor</option>
@@ -176,7 +176,7 @@ export default function JobCardDetailPage({ params }: { params: Promise<{ id: st
               <p className="text-sm text-slate-400">This job card is closed.</p>
             )}
           </div>
-          <div className="mt-6 space-y-1 text-sm text-slate-500">
+          <div className="mt-6 space-y-1 text-sm text-slate-400">
             <p>Odometer: {jobCard.odometer_km.toLocaleString()} km</p>
             <p>Opened: {new Date(jobCard.created_at).toLocaleString()}</p>
             {jobCard.completed_at && (

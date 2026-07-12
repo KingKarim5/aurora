@@ -19,6 +19,9 @@ class Settings(BaseSettings):
 
     cors_origins: list[str] = ["http://localhost:3000"]
 
+    # OAuth client ID for "Sign in with Google"; empty disables the endpoint.
+    google_client_id: str = ""
+
     default_tax_rate: float = 0.10
 
     first_admin_email: str = "admin@aurora.dev"

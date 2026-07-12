@@ -84,34 +84,34 @@ export default function VehicleDetailPage({ params }: { params: Promise<{ id: st
             <Badge value={twin.status} />
           </div>
           {twin.overall_health === null ? (
-            <p className="text-sm text-slate-500">
+            <p className="text-sm text-slate-400">
               No health snapshots yet — record one below to activate the twin.
             </p>
           ) : (
             <>
               <p className="mb-4 text-3xl font-bold">
                 {twin.overall_health}
-                <span className="text-base font-normal text-slate-500"> / 100</span>
+                <span className="text-base font-normal text-slate-400"> / 100</span>
               </p>
               <div className="space-y-3">
                 {twin.components.map((c) => (
                   <div key={c.component}>
                     <div className="mb-1 flex items-center justify-between text-sm">
                       <span className="font-medium capitalize">{c.component}</span>
-                      <span className="text-slate-500">{c.score}</span>
+                      <span className="text-slate-400">{c.score}</span>
                     </div>
-                    <div className="h-2 rounded-full bg-slate-100">
+                    <div className="h-2 rounded-full bg-white/5">
                       <div
                         className={`h-2 rounded-full ${
-                          c.status === "critical" ? "bg-red-500"
-                          : c.status === "attention" ? "bg-amber-500"
-                          : "bg-emerald-500"
+                          c.status === "critical" ? "bg-red-400"
+                          : c.status === "attention" ? "bg-amber-400"
+                          : "bg-emerald-400"
                         }`}
                         style={{ width: `${c.score}%` }}
                       />
                     </div>
                     {c.prediction && (
-                      <p className="mt-1 text-xs text-amber-700">⚠ {c.prediction}</p>
+                      <p className="mt-1 text-xs text-amber-300">⚠ {c.prediction}</p>
                     )}
                   </div>
                 ))}
@@ -135,7 +135,7 @@ export default function VehicleDetailPage({ params }: { params: Promise<{ id: st
             <div className="grid grid-cols-2 gap-3">
               {SNAPSHOT_FIELDS.map(([key, label]) => (
                 <label key={key} className="text-sm">
-                  <span className="mb-1 block text-slate-600">{label} (0–100)</span>
+                  <span className="mb-1 block text-slate-400">{label} (0–100)</span>
                   <input
                     className={inputCls} type="number" min={0} max={100} required
                     value={snapshot[key]}
@@ -164,30 +164,30 @@ export default function VehicleDetailPage({ params }: { params: Promise<{ id: st
 
           {report && (
             <div>
-              <p className="mb-4 rounded-lg bg-slate-50 px-4 py-3 text-sm">{report.summary}</p>
+              <p className="mb-4 rounded-lg bg-white/[0.03] px-4 py-3 text-sm">{report.summary}</p>
               <div className="space-y-4">
                 {report.findings.map((f) => (
-                  <div key={f.code} className="rounded-lg border border-slate-200 p-4">
+                  <div key={f.code} className="rounded-lg border border-white/10 p-4">
                     <div className="mb-2 flex flex-wrap items-center gap-2">
                       <span className="font-mono font-bold">{f.code}</span>
                       {f.severity != null && <Badge value={
                         f.severity >= 4 ? "critical" : f.severity === 3 ? "attention" : "good"
                       } />}
-                      <span className="text-sm text-slate-600">{f.title ?? "Unknown code"}</span>
-                      <span className="ml-auto text-xs text-slate-500">
+                      <span className="text-sm text-slate-400">{f.title ?? "Unknown code"}</span>
+                      <span className="ml-auto text-xs text-slate-400">
                         confidence {(f.confidence * 100).toFixed(0)}%
                         {f.seen_before_on_same_model > 0 &&
                           ` · seen ${f.seen_before_on_same_model}× on this model`}
                       </span>
                     </div>
                     {f.likely_causes.length > 0 && (
-                      <p className="text-sm text-slate-600">
+                      <p className="text-sm text-slate-400">
                         <span className="font-medium">Likely causes:</span>{" "}
                         {f.likely_causes.join("; ")}
                       </p>
                     )}
                     {f.recommended_actions.length > 0 && (
-                      <p className="text-sm text-slate-600">
+                      <p className="text-sm text-slate-400">
                         <span className="font-medium">Recommended:</span>{" "}
                         {f.recommended_actions.join("; ")}
                       </p>

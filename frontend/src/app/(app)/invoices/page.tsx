@@ -47,15 +47,15 @@ export default function InvoicesPage() {
         <Empty message="No invoices yet. Complete a job card and generate one." />
       ) : (
         <TableShell>
-          <thead className="bg-slate-50">
+          <thead className="bg-white/[0.03]">
             <tr>
               <Th>Number</Th><Th>Status</Th><Th>Subtotal</Th><Th>Tax</Th>
               <Th>Total</Th><Th>Balance due</Th><Th>Issued</Th><Th></Th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-slate-100">
+          <tbody className="divide-y divide-white/5">
             {invoices.map((inv) => (
-              <tr key={inv.id} className="hover:bg-slate-50">
+              <tr key={inv.id} className="hover:bg-white/[0.04]">
                 <Td>{inv.number}</Td>
                 <Td><Badge value={inv.status} /></Td>
                 <Td>${inv.subtotal}</Td>
@@ -82,7 +82,7 @@ export default function InvoicesPage() {
                     ) : (
                       <button
                         onClick={() => { setPayingId(inv.id); setAmount(inv.balance_due); }}
-                        className="font-medium text-sky-600 hover:underline"
+                        className="font-medium text-sky-300 hover:underline"
                       >
                         Record payment
                       </button>

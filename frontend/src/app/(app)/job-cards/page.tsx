@@ -62,7 +62,7 @@ export default function JobCardsPage() {
       </PageHeader>
 
       {showForm && (
-        <form onSubmit={onCreate} className="mb-6 grid max-w-3xl grid-cols-2 gap-3 rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+        <form onSubmit={onCreate} className="mb-6 grid max-w-3xl grid-cols-2 gap-3 glass rounded-2xl p-5">
           {error && <div className="col-span-2"><ErrorNote message={error} /></div>}
           <select className={inputCls} required value={form.customer_id}
             onChange={(e) => setForm({ ...form, customer_id: e.target.value, vehicle_id: "" })}>
@@ -95,21 +95,21 @@ export default function JobCardsPage() {
         <Empty message="No job cards yet." />
       ) : (
         <TableShell>
-          <thead className="bg-slate-50">
+          <thead className="bg-white/[0.03]">
             <tr>
               <Th>Number</Th><Th>Status</Th><Th>Complaint</Th><Th>Total</Th><Th>Opened</Th><Th></Th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-slate-100">
+          <tbody className="divide-y divide-white/5">
             {jobCards.map((jc) => (
-              <tr key={jc.id} className="hover:bg-slate-50">
+              <tr key={jc.id} className="hover:bg-white/[0.04]">
                 <Td>{jc.number}</Td>
                 <Td><Badge value={jc.status} /></Td>
                 <Td>{jc.complaint.slice(0, 60)}{jc.complaint.length > 60 ? "…" : ""}</Td>
                 <Td>${jc.total}</Td>
                 <Td>{new Date(jc.created_at).toLocaleDateString()}</Td>
                 <Td>
-                  <Link href={`/job-cards/${jc.id}`} className="font-medium text-sky-600 hover:underline">
+                  <Link href={`/job-cards/${jc.id}`} className="font-medium text-sky-300 hover:underline">
                     Open →
                   </Link>
                 </Td>

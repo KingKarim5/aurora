@@ -24,11 +24,13 @@ settings = get_settings()
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # In development, create tables directly; in production run `alembic upgrade head`.
+    # Development convenience only. In production (Docker, Vercel) the schema is
+    # managed by `alembic upgrade head` and seeded once via `python -m app.db.seed`,
+    # keeping serverless cold starts free of DB setup work.
     if settings.environment == "development":
         Base.metadata.create_all(bind=engine)
-    with SessionLocal() as db:
-        seed_initial_data(db)
+        with SessionLocal() as db:
+            seed_initial_data(db)
     yield
 
 

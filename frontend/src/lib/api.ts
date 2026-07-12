@@ -51,6 +51,20 @@ export async function api<T>(path: string, options: RequestInit = {}): Promise<T
   return res.json() as Promise<T>;
 }
 
+export async function googleLogin(credential: string) {
+  const res = await fetch(`${API_URL}/auth/google`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ credential }),
+  });
+  if (!res.ok) {
+    const body = await res.json().catch(() => null);
+    throw new ApiError(res.status, body?.detail ?? "Google sign-in failed");
+  }
+  const data = await res.json();
+  setTokens(data.access_token, data.refresh_token);
+}
+
 export async function login(email: string, password: string) {
   const res = await fetch(`${API_URL}/auth/login`, {
     method: "POST",

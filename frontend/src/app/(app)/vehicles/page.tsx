@@ -65,7 +65,7 @@ export default function VehiclesPage() {
       </PageHeader>
 
       {showForm && (
-        <form onSubmit={onCreate} className="mb-6 grid max-w-3xl grid-cols-2 gap-3 rounded-xl border border-slate-200 bg-white p-5 shadow-sm md:grid-cols-4">
+        <form onSubmit={onCreate} className="mb-6 grid max-w-3xl grid-cols-2 gap-3 glass rounded-2xl p-5 md:grid-cols-4">
           {error && <div className="col-span-full"><ErrorNote message={error} /></div>}
           <select className={inputCls} required value={form.customer_id}
             onChange={(e) => setForm({ ...form, customer_id: e.target.value })}>
@@ -111,20 +111,20 @@ export default function VehiclesPage() {
         <Empty message="No vehicles found." />
       ) : (
         <TableShell>
-          <thead className="bg-slate-50">
+          <thead className="bg-white/[0.03]">
             <tr>
               <Th>Plate</Th><Th>Vehicle</Th><Th>Fuel</Th><Th>Mileage</Th><Th>Digital Twin</Th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-slate-100">
+          <tbody className="divide-y divide-white/5">
             {vehicles.map((v) => (
-              <tr key={v.id} className="hover:bg-slate-50">
+              <tr key={v.id} className="hover:bg-white/[0.04]">
                 <Td>{v.license_plate}</Td>
                 <Td>{v.year} {v.make} {v.model}</Td>
                 <Td>{v.fuel_type}</Td>
                 <Td>{v.mileage_km.toLocaleString()} km</Td>
                 <Td>
-                  <Link href={`/vehicles/${v.id}`} className="font-medium text-sky-600 hover:underline">
+                  <Link href={`/vehicles/${v.id}`} className="font-medium text-sky-300 hover:underline">
                     View twin →
                   </Link>
                 </Td>

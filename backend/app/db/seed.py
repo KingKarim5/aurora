@@ -167,3 +167,12 @@ def seed_initial_data(db: Session) -> None:
             db.add(ObdCode(**entry))
 
     db.commit()
+
+
+if __name__ == "__main__":
+    # One-shot seeding for production databases: python -m app.db.seed
+    from app.db.session import SessionLocal
+
+    with SessionLocal() as session:
+        seed_initial_data(session)
+    print("Seed complete: admin user and OBD knowledge base are in place.")
