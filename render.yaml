@@ -16,3 +16,5 @@ services:
         sync: false # paste the Neon connection string in the Render dashboard
       - key: CORS_ORIGINS
         value: '["https://aurora-pi-sable.vercel.app", "http://localhost:3000"]'
+      - key: GOOGLE_CLIENT_ID # public identifier, not a secret
+        value: 196267596722-21uak2ru1j8rls2dptdvgkgkse1ed1nq.apps.googleusercontent.com
