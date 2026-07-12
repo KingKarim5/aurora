@@ -46,3 +46,6 @@ def require_roles(*roles: UserRole):
 
 ManagerOrAdmin = require_roles(UserRole.ADMIN, UserRole.MANAGER)
 AdminOnly = require_roles(UserRole.ADMIN)
+# Workshop operations are staff-only; customer accounts (e.g. Google sign-ups)
+# only reach the auth endpoints until the customer portal ships.
+StaffOnly = require_roles(UserRole.ADMIN, UserRole.MANAGER, UserRole.MECHANIC)

@@ -10,6 +10,7 @@ class UserRole(str, enum.Enum):
     ADMIN = "admin"
     MANAGER = "manager"
     MECHANIC = "mechanic"
+    CUSTOMER = "customer"
 
 
 class User(TimestampMixin, Base):

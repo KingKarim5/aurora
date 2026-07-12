@@ -60,14 +60,15 @@ def google_login(db: DbSession, body: GoogleLoginRequest):
     email = claims["email"].lower()
     user = db.scalar(select(User).where(User.email == email))
     if user is None:
-        # First Google sign-in: provision a least-privilege account. The random
-        # password is unrecoverable; the account is usable via Google only
-        # until an admin sets a password.
+        # First Google sign-in: provision a customer account. Staff accounts
+        # are only ever created by an admin with a dedicated email/password.
+        # The random password is unrecoverable; the account is usable via
+        # Google only until an admin sets a password.
         user = User(
             email=email,
             full_name=claims.get("name") or email.split("@")[0],
             hashed_password=hash_password(secrets.token_urlsafe(32)),
-            role=UserRole.MECHANIC,
+            role=UserRole.CUSTOMER,
         )
         db.add(user)
         db.commit()

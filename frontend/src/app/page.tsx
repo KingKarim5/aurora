@@ -1,25 +1,28 @@
 "use client";
 
 import Link from "next/link";
-import { Reveal, TiltCard } from "@/components/motion";
+import { LazyVideo, Reveal, TiltCard } from "@/components/motion";
+import { Logo } from "@/components/logo";
 
 /* Unsplash-hosted photography (free license). */
 const IMG = {
   hero: "https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?auto=format&fit=crop&w=2400&q=75",
-  twin: "https://images.unsplash.com/photo-1553440569-bcc63803a83d?auto=format&fit=crop&w=1400&q=70",
-  diagnostics: "https://images.unsplash.com/photo-1605559424843-9e4c228bf1c2?auto=format&fit=crop&w=1400&q=70",
+  twin: "https://images.unsplash.com/photo-1621007947382-bb3c3994e3fb?auto=format&fit=crop&w=1400&q=70",
+  diagnostics: "https://images.unsplash.com/photo-1617469767053-d3b523a0b982?auto=format&fit=crop&w=1400&q=70",
   parts: "https://images.unsplash.com/photo-1486262715619-67b85e0b08d3?auto=format&fit=crop&w=1400&q=70",
   road: "https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=2400&q=70",
   tools: "https://images.unsplash.com/photo-1530046339160-ce3e530c7d2f?auto=format&fit=crop&w=2400&q=70",
+  washPoster: "https://images.unsplash.com/photo-1520340356584-f9917d1eea6f?auto=format&fit=crop&w=1200&q=70",
+  enginePoster: "https://images.unsplash.com/photo-1486262715619-67b85e0b08d3?auto=format&fit=crop&w=1200&q=70",
+  detailPoster: "https://images.unsplash.com/photo-1607860108855-64acf2078ed9?auto=format&fit=crop&w=1200&q=70",
 };
 
-function Logo({ className = "text-xl" }: { className?: string }) {
-  return (
-    <span className={`font-display font-bold tracking-tight text-white ${className}`}>
-      AUR<span className="text-gradient">O</span>RA
-    </span>
-  );
-}
+/* Pexels-hosted footage (free license). */
+const VIDS = {
+  wash: "https://videos.pexels.com/video-files/13643099/13643099-hd_1280_720_24fps.mp4",
+  engine: "https://videos.pexels.com/video-files/32329382/13790370_2560_1440_25fps.mp4",
+  detail: "https://videos.pexels.com/video-files/31220615/13335665_2560_1440_24fps.mp4",
+};
 
 function Gauge({ label, value, color }: { label: string; value: number; color: string }) {
   const C = 2 * Math.PI * 42;
@@ -190,6 +193,44 @@ export default function LandingPage() {
         </div>
       </section>
 
+      {/* facilities — live footage */}
+      <section className="mx-auto max-w-7xl px-6 pb-24">
+        <Reveal>
+          <p className="text-xs font-semibold uppercase tracking-[0.3em] text-sky-300">Inside the workshop</p>
+          <h2 className="font-display mt-3 max-w-2xl text-3xl font-bold text-white md:text-5xl">
+            Wash bay. Engine bay. Detailing.
+          </h2>
+        </Reveal>
+        <div className="mt-12 grid gap-6 md:grid-cols-3">
+          {[
+            { vid: VIDS.wash, poster: IMG.washPoster, title: "Wash bay", body: "Every service ends with a full exterior wash — part of the standard." },
+            { vid: VIDS.engine, poster: IMG.enginePoster, title: "Engine bay", body: "Factory-procedure repairs with genuine and OEM-grade parts." },
+            { vid: VIDS.detail, poster: IMG.detailPoster, title: "Detailing", body: "Paint-safe finishing, interior care and delivery-ready presentation." },
+          ].map((f, i) => (
+            <Reveal key={f.title} delay={i * 120}>
+              <div className="group overflow-hidden rounded-3xl">
+                <div className="relative aspect-[4/5] overflow-hidden">
+                  <LazyVideo
+                    src={f.vid}
+                    poster={f.poster}
+                    className="absolute inset-0 h-full w-full object-cover transition duration-700 group-hover:scale-105"
+                  />
+                  <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-transparent" />
+                  <div className="pointer-events-none absolute inset-x-0 bottom-0 p-6">
+                    <div className="mb-2 flex items-center gap-2">
+                      <span className="h-1.5 w-1.5 animate-pulse-glow rounded-full bg-red-400" />
+                      <span className="text-[10px] font-bold uppercase tracking-[0.25em] text-slate-300">Live footage</span>
+                    </div>
+                    <h3 className="font-display text-2xl font-bold text-white">{f.title}</h3>
+                    <p className="mt-2 text-sm leading-relaxed text-slate-300">{f.body}</p>
+                  </div>
+                </div>
+              </div>
+            </Reveal>
+          ))}
+        </div>
+      </section>
+
       {/* parallax stat band */}
       <section
         className="relative bg-cover bg-center bg-fixed py-28"
@@ -312,7 +353,7 @@ export default function LandingPage() {
       {/* footer */}
       <footer className="border-t border-white/5 bg-[#05070d]">
         <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-4 px-6 py-10 text-sm text-slate-500 md:flex-row">
-          <Logo className="text-base" />
+          <Logo size="sm" />
           <p>Automotive Unified Resource, Operations, Repair &amp; Analytics</p>
           <p>Photography via Unsplash · MIT licensed</p>
         </div>

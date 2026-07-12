@@ -53,6 +53,10 @@ const BADGE_COLORS: Record<string, string> = {
   attention: "bg-amber-400/15 text-amber-300 ring-amber-400/30",
   critical: "bg-red-400/15 text-red-300 ring-red-400/30",
   unknown: "bg-slate-500/10 text-slate-400 ring-slate-500/20",
+  admin: "bg-sky-400/15 text-sky-300 ring-sky-400/30",
+  manager: "bg-purple-400/15 text-purple-300 ring-purple-400/30",
+  mechanic: "bg-emerald-400/15 text-emerald-300 ring-emerald-400/30",
+  customer: "bg-amber-400/15 text-amber-300 ring-amber-400/30",
 };
 
 export function Badge({ value }: { value: string }) {

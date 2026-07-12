@@ -1,7 +1,7 @@
 "use client";
 
-import Link from "next/link";
 import Script from "next/script";
+import { Logo } from "@/components/logo";
 import { useRouter } from "next/navigation";
 import { FormEvent, useCallback, useEffect, useRef, useState } from "react";
 import { ApiError, googleLogin, login } from "@/lib/api";
@@ -89,10 +89,8 @@ export default function LoginPage() {
       <div className="pointer-events-none absolute bottom-[-20%] left-[-10%] h-[26rem] w-[26rem] rounded-full bg-cyan-400/10 blur-3xl" />
 
       <div className="glass relative w-full max-w-md rounded-3xl p-8 md:p-10">
-        <Link href="/" className="font-display text-2xl font-bold tracking-tight text-white">
-          AUR<span className="text-gradient">O</span>RA
-        </Link>
-        <p className="mb-8 mt-1 text-sm text-slate-400">Workshop operations console</p>
+        <Logo size="md" sub="Operations console" />
+        <div className="mb-8" />
 
         <form onSubmit={onSubmit}>
           <label className="mb-1.5 block text-sm font-medium text-slate-300">Email</label>
@@ -137,7 +135,7 @@ export default function LoginPage() {
             </div>
             <div ref={googleBtnRef} className="flex justify-center" />
             <p className="mt-4 text-center text-xs text-slate-400">
-              First Google sign-in creates a mechanic account automatically.
+              Google sign-in is for customers. Staff use their dedicated workshop email.
             </p>
           </>
         )}

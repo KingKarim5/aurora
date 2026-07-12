@@ -112,7 +112,7 @@ def test_google_login_unconfigured_returns_503(client):
     assert resp.status_code == 503
 
 
-def test_google_login_creates_least_privilege_user(client, google_enabled, google_claims):
+def test_google_login_creates_customer_account(client, google_enabled, google_claims):
     resp = client.post("/api/v1/auth/google", json={"credential": "valid-token"})
     assert resp.status_code == 200, resp.text
     body = resp.json()
@@ -122,8 +122,17 @@ def test_google_login_creates_least_privilege_user(client, google_enabled, googl
         "/api/v1/auth/me", headers={"Authorization": f"Bearer {body['access_token']}"}
     ).json()
     assert me["email"] == "new.mechanic@gmail.com"
-    assert me["role"] == "mechanic"
+    assert me["role"] == "customer"
     assert me["full_name"] == "New Mechanic"
+
+
+def test_customer_role_cannot_reach_workshop_routes(client, google_enabled, google_claims):
+    token = client.post("/api/v1/auth/google", json={"credential": "valid-token"}).json()[
+        "access_token"
+    ]
+    headers = {"Authorization": f"Bearer {token}"}
+    for path in ("/api/v1/customers", "/api/v1/vehicles", "/api/v1/dashboard"):
+        assert client.get(path, headers=headers).status_code == 403, path
 
 
 def test_google_login_reuses_existing_user(client, google_enabled, google_claims):

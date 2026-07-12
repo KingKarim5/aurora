@@ -5,6 +5,8 @@ import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { api, clearTokens, getToken } from "@/lib/api";
 import { User } from "@/lib/types";
+import { Logo } from "@/components/logo";
+import { CarArt } from "@/components/car-art";
 
 const NAV = [
   { href: "/dashboard", label: "Dashboard", icon: "M3 12l9-9 9 9M5 10v10a1 1 0 001 1h3m10-11v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" },
@@ -14,6 +16,65 @@ const NAV = [
   { href: "/parts", label: "Parts", icon: "M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" },
   { href: "/invoices", label: "Invoices", icon: "M9 8h6m-5 4h4m-7 8h10a2 2 0 002-2V6a2 2 0 00-2-2H7a2 2 0 00-2 2v12a2 2 0 002 2z" },
 ];
+
+const ADMIN_NAV = [
+  { href: "/team", label: "Team", icon: "M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" },
+];
+
+/** Faint automotive backdrop behind every console page. */
+function AmbientBackdrop() {
+  return (
+    <div aria-hidden className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
+      <div className="grid-lines absolute inset-0" />
+      <div className="absolute -top-32 right-[-15%] h-[36rem] w-[36rem] rounded-full bg-sky-500/[0.07] blur-3xl" />
+      <div className="absolute bottom-[-20%] left-[-10%] h-[30rem] w-[30rem] rounded-full bg-cyan-400/[0.05] blur-3xl" />
+      <img
+        src="https://images.unsplash.com/photo-1621007947382-bb3c3994e3fb?auto=format&fit=crop&w=1600&q=50"
+        alt=""
+        className="absolute bottom-0 right-0 w-[52rem] max-w-none opacity-[0.05] grayscale"
+        style={{
+          maskImage: "radial-gradient(70% 70% at 60% 60%, black, transparent)",
+          WebkitMaskImage: "radial-gradient(70% 70% at 60% 60%, black, transparent)",
+        }}
+      />
+    </div>
+  );
+}
+
+/** What customer-role accounts (Google sign-ins) see instead of the staff console. */
+function CustomerHome({ user, onLogout }: { user: User; onLogout: () => void }) {
+  return (
+    <main className="grid-lines relative flex min-h-screen items-center justify-center px-4">
+      <AmbientBackdrop />
+      <div className="glass w-full max-w-xl rounded-3xl p-8 text-center md:p-12">
+        <div className="flex justify-center"><Logo size="lg" href="/" sub="Customer portal" /></div>
+        <CarArt body="sedan" from="#38bdf8" to="#22d3ee" className="mx-auto mt-6 w-64" />
+        <h1 className="font-display mt-4 text-2xl font-bold text-white">
+          Welcome, {user.full_name.split(" ")[0]}
+        </h1>
+        <p className="mx-auto mt-3 max-w-md text-sm leading-relaxed text-slate-400">
+          Your customer account is active. Online service tracking — your vehicle&apos;s digital
+          twin, job progress and invoices — is coming to this portal soon. For now, call or visit
+          the workshop and we&apos;ll take care of everything.
+        </p>
+        <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
+          <a
+            href="tel:+8801700000000"
+            className="rounded-full bg-gradient-to-r from-sky-500 to-cyan-400 px-6 py-2.5 text-sm font-bold text-slate-950 transition hover:brightness-110"
+          >
+            Call the workshop
+          </a>
+          <button
+            onClick={onLogout}
+            className="rounded-full border border-white/15 px-6 py-2.5 text-sm font-semibold text-slate-200 transition hover:bg-white/5"
+          >
+            Sign out
+          </button>
+        </div>
+      </div>
+    </main>
+  );
+}
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
@@ -37,18 +98,19 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     router.replace("/login");
   }
 
+  if (user?.role === "customer") {
+    return <CustomerHome user={user} onLogout={logout} />;
+  }
+
+  const nav = user?.role === "admin" ? [...NAV, ...ADMIN_NAV] : NAV;
+
   const sidebar = (
     <>
       <div className="px-5 py-6">
-        <Link href="/" className="font-display text-xl font-bold tracking-tight text-white">
-          AUR<span className="text-gradient">O</span>RA
-        </Link>
-        <p className="mt-0.5 text-xs uppercase tracking-widest text-slate-400">
-          Workshop console
-        </p>
+        <Logo size="md" sub="Workshop console" />
       </div>
       <nav className="flex-1 space-y-1 px-3">
-        {NAV.map((item) => {
+        {nav.map((item) => {
           const active = pathname.startsWith(item.href);
           return (
             <Link
@@ -99,11 +161,11 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="flex min-h-screen flex-col lg:flex-row">
+      <AmbientBackdrop />
+
       {/* mobile top bar */}
       <header className="glass-deep sticky top-0 z-40 flex items-center justify-between px-4 py-3 lg:hidden">
-        <Link href="/" className="font-display text-lg font-bold tracking-tight text-white">
-          AUR<span className="text-gradient">O</span>RA
-        </Link>
+        <Logo size="sm" />
         <button
           onClick={() => setMenuOpen((v) => !v)}
           aria-label="Toggle menu"

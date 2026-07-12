@@ -80,6 +80,81 @@ export function TiltCard({
   );
 }
 
+/** Video that only loads + plays once scrolled into view (muted loop). */
+export function LazyVideo({
+  src,
+  poster,
+  className = "",
+}: {
+  src: string;
+  poster: string;
+  className?: string;
+}) {
+  const ref = useRef<HTMLVideoElement>(null);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          if (!el.src) el.src = src;
+          el.play().catch(() => {});
+        } else {
+          el.pause();
+        }
+      },
+      { threshold: 0.25 }
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, [src]);
+  return (
+    <video
+      ref={ref}
+      poster={poster}
+      muted
+      loop
+      playsInline
+      preload="none"
+      className={className}
+    />
+  );
+}
+
+/** Number that counts up from 0 when it enters the viewport. */
+export function CountUp({ value, prefix = "" }: { value: number; prefix?: string }) {
+  const ref = useRef<HTMLSpanElement>(null);
+  const [display, setDisplay] = useState(0);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry.isIntersecting) return;
+        io.disconnect();
+        const start = performance.now();
+        const duration = 1100;
+        function tick(now: number) {
+          const t = Math.min((now - start) / duration, 1);
+          const eased = 1 - Math.pow(1 - t, 3);
+          setDisplay(Math.round(value * eased * 100) / 100);
+          if (t < 1) requestAnimationFrame(tick);
+        }
+        requestAnimationFrame(tick);
+      },
+      { threshold: 0.4 }
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, [value]);
+  return (
+    <span ref={ref}>
+      {prefix}
+      {Number.isInteger(value) ? Math.round(display).toLocaleString() : display.toLocaleString()}
+    </span>
+  );
+}
+
 /** Returns a style translating layers against pointer movement (depth illusion). */
 export function useMouseParallax(strength = 20) {
   const [offset, setOffset] = useState({ x: 0, y: 0 });

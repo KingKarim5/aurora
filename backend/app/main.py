@@ -3,6 +3,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from app.api.deps import StaffOnly
 from app.api.routes import (
     appointments,
     auth,
@@ -49,8 +50,10 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+app.include_router(auth.router, prefix=settings.api_v1_prefix)
+
+# Everything operational is staff-only; customer accounts stop at auth.
 for router in (
-    auth.router,
     customers.router,
     vehicles.router,
     job_cards.router,
@@ -60,7 +63,7 @@ for router in (
     diagnostics.router,
     dashboard.router,
 ):
-    app.include_router(router, prefix=settings.api_v1_prefix)
+    app.include_router(router, prefix=settings.api_v1_prefix, dependencies=[StaffOnly])
 
 
 @app.get("/health", tags=["health"])
