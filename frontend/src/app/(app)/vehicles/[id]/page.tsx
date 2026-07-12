@@ -3,8 +3,10 @@
 import { use, useCallback, useEffect, useState, FormEvent } from "react";
 import { api, ApiError } from "@/lib/api";
 import { DiagnosticReport, DigitalTwin, Vehicle } from "@/lib/types";
+import { carArtFor } from "@/lib/cars";
+import { CarArt } from "@/components/car-art";
 import {
-  Badge, btnCls, Card, ErrorNote, inputCls, Loading, PageHeader,
+  Badge, btnCls, Card, ErrorNote, inputCls, Loading,
 } from "@/components/ui";
 
 const SNAPSHOT_FIELDS = [
@@ -69,11 +71,29 @@ export default function VehicleDetailPage({ params }: { params: Promise<{ id: st
 
   if (!vehicle || !twin) return <Loading />;
 
+  const art = carArtFor(vehicle.make, vehicle.model);
+
   return (
     <div>
-      <PageHeader
-        title={`${vehicle.year} ${vehicle.make} ${vehicle.model} · ${vehicle.license_plate}`}
-      />
+      <div
+        className="glass mb-6 flex flex-col items-center gap-2 overflow-hidden rounded-2xl p-6 sm:flex-row sm:gap-8"
+        style={{ background: `linear-gradient(120deg, ${art.from}12, ${art.to}08)` }}
+      >
+        <CarArt body={art.body} from={art.from} to={art.to} className="w-56 shrink-0" />
+        <div>
+          <h1 className="font-display text-2xl font-bold tracking-tight text-white">
+            {vehicle.year} {vehicle.make} {vehicle.model}
+          </h1>
+          <div className="mt-2 flex flex-wrap items-center gap-3 text-sm text-slate-400">
+            <span className="rounded-full border border-white/15 bg-black/30 px-3 py-0.5 font-mono text-xs font-bold tracking-wider text-slate-200">
+              {vehicle.license_plate}
+            </span>
+            <span className="capitalize">{vehicle.fuel_type}</span>
+            <span>{vehicle.mileage_km.toLocaleString()} km</span>
+            <Badge value={twin.status} />
+          </div>
+        </div>
+      </div>
       {error && <ErrorNote message={error} />}
 
       <div className="grid gap-6 lg:grid-cols-2">

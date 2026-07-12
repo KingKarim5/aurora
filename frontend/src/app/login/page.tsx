@@ -3,7 +3,7 @@
 import Link from "next/link";
 import Script from "next/script";
 import { useRouter } from "next/navigation";
-import { FormEvent, useCallback, useRef, useState } from "react";
+import { FormEvent, useCallback, useEffect, useRef, useState } from "react";
 import { ApiError, googleLogin, login } from "@/lib/api";
 
 const GOOGLE_CLIENT_ID = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
@@ -28,9 +28,12 @@ export default function LoginPage() {
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const googleBtnRef = useRef<HTMLDivElement>(null);
+  const googleInitialized = useRef(false);
 
   const initGoogle = useCallback(() => {
     if (!GOOGLE_CLIENT_ID || !window.google || !googleBtnRef.current) return;
+    if (googleInitialized.current) return;
+    googleInitialized.current = true;
     window.google.accounts.id.initialize({
       client_id: GOOGLE_CLIENT_ID,
       callback: async (response: { credential: string }) => {
@@ -54,6 +57,12 @@ export default function LoginPage() {
       text: "continue_with",
     });
   }, [router]);
+
+  // The <Script> onLoad only fires on the first-ever load; when navigating
+  // here client-side the script is already present, so init on mount too.
+  useEffect(() => {
+    initGoogle();
+  }, [initGoogle]);
 
   async function onSubmit(e: FormEvent) {
     e.preventDefault();
@@ -127,7 +136,7 @@ export default function LoginPage() {
               <span className="h-px flex-1 bg-white/10" />
             </div>
             <div ref={googleBtnRef} className="flex justify-center" />
-            <p className="mt-4 text-center text-xs text-slate-500">
+            <p className="mt-4 text-center text-xs text-slate-400">
               First Google sign-in creates a mechanic account automatically.
             </p>
           </>

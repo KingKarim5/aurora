@@ -1,4 +1,6 @@
-"""Idempotent seed data: first admin user and the OBD code knowledge base."""
+"""Idempotent seed data: admin user, OBD knowledge base, and parts catalog."""
+
+from decimal import Decimal
 
 from sqlalchemy import select
 from sqlalchemy.orm import Session
@@ -7,6 +9,7 @@ from app.core.config import get_settings
 from app.core.security import hash_password
 from app.models.diagnostics import ObdCode
 from app.models.user import User, UserRole
+from app.models.workshop import Part
 
 OBD_KNOWLEDGE_BASE = [
     {
@@ -149,6 +152,36 @@ OBD_KNOWLEDGE_BASE = [
 ]
 
 
+# Common workshop stock, tuned for the Toyota/Honda/Nissan-heavy Bangladeshi fleet.
+# (sku, name, category, quantity, unit_price, reorder_level, supplier)
+PARTS_CATALOG = [
+    ("FLT-OIL-T01", "Oil filter — Toyota 90915-YZZE1", "Filters", 40, "4.50", 10, "Toyota Genuine"),
+    ("FLT-OIL-H01", "Oil filter — Honda 15400-RTA-003", "Filters", 25, "5.20", 8, "Honda Genuine"),
+    ("FLT-AIR-T02", "Air filter — Corolla/Premio 17801-21050", "Filters", 20, "9.80", 6, "Denso"),
+    ("FLT-CAB-U01", "Cabin AC filter (universal 215mm)", "Filters", 30, "6.00", 8, "Bosch"),
+    ("FLT-FUEL-N1", "Fuel filter — Nissan 16400-4M405", "Filters", 12, "14.00", 4, "Nissan"),
+    ("PLG-IRD-NG4", "Iridium spark plug — NGK ILKAR7B11", "Ignition", 48, "13.50", 16, "NGK"),
+    ("COIL-IGN-T1", "Ignition coil — Toyota 90919-02258", "Ignition", 10, "38.00", 4, "Denso"),
+    ("BRK-PAD-T01", "Front brake pads — Premio/Allion set", "Brakes", 16, "32.00", 6, "Akebono"),
+    ("BRK-PAD-H01", "Front brake pads — CR-V/Civic set", "Brakes", 10, "36.00", 4, "Nisshinbo"),
+    ("BRK-DSC-T01", "Brake disc rotor — Corolla (pair)", "Brakes", 8, "58.00", 3, "Aisin"),
+    ("BRK-FLD-D31", "Brake fluid DOT-3 (500 ml)", "Brakes", 36, "4.20", 12, "Toyota Genuine"),
+    ("OIL-ENG-0W20", "Engine oil 0W-20 full synthetic (4 L)", "Fluids", 50, "28.00", 15, "Castrol"),
+    ("OIL-ENG-5W30", "Engine oil 5W-30 synthetic (4 L)", "Fluids", 40, "24.00", 12, "Mobil"),
+    ("OIL-CVT-TC1", "CVT fluid TC (4 L)", "Fluids", 18, "34.00", 6, "Aisin"),
+    ("CLNT-SLL-P1", "Super long-life coolant pink (2 L)", "Fluids", 22, "12.50", 8, "Toyota"),
+    ("BAT-AGM-S95", "Battery S-95 EFB (start-stop)", "Electrical", 6, "145.00", 2, "GS Yuasa"),
+    ("BAT-NS60-ST", "Battery NS60 maintenance-free", "Electrical", 8, "72.00", 3, "Hamko"),
+    ("BLT-SRP-6PK", "Serpentine belt 6PK-1230", "Engine", 14, "16.00", 5, "Gates"),
+    ("WPR-BLD-26P", 'Wiper blade set 26"/14"', "Body", 24, "9.00", 8, "Bosch"),
+    ("SUS-SHK-F01", "Front shock — Axio/Fielder (pair)", "Suspension", 6, "96.00", 2, "KYB"),
+    ("SUS-LNK-S01", "Stabilizer link — Toyota (pair)", "Suspension", 12, "22.00", 4, "555 Japan"),
+    ("SNS-O2-DN01", "Oxygen sensor — Denso 89465 series", "Sensors", 7, "54.00", 3, "Denso"),
+    ("AC-GAS-134A", "AC refrigerant R-134a (450 g)", "AC", 20, "11.00", 6, "Honeywell"),
+    ("CV-BOOT-T01", "CV joint boot kit — Toyota FWD", "Drivetrain", 15, "8.50", 5, "Maruichi"),
+]
+
+
 def seed_initial_data(db: Session) -> None:
     settings = get_settings()
 
@@ -165,6 +198,20 @@ def seed_initial_data(db: Session) -> None:
     for entry in OBD_KNOWLEDGE_BASE:
         if db.get(ObdCode, entry["code"]) is None:
             db.add(ObdCode(**entry))
+
+    for sku, name, category, qty, price, reorder, supplier in PARTS_CATALOG:
+        if not db.scalar(select(Part).where(Part.sku == sku)):
+            db.add(
+                Part(
+                    sku=sku,
+                    name=name,
+                    category=category,
+                    quantity=qty,
+                    unit_price=Decimal(price),
+                    reorder_level=reorder,
+                    supplier=supplier,
+                )
+            )
 
     db.commit()
 
