@@ -5,7 +5,8 @@ services:
     rootDir: backend
     plan: free
     healthCheckPath: /health
-    # Startup (migrate, seed, serve) is the Dockerfile CMD; Render injects PORT.
+    # Exec'd without a shell, so this must be a simple command (no && chains).
+    dockerCommand: sh start.sh
     envVars:
       - key: ENVIRONMENT
         value: production
