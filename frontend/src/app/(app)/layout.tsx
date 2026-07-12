@@ -19,6 +19,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const pathname = usePathname();
   const [user, setUser] = useState<User | null>(null);
+  const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
     if (!getToken()) {
@@ -28,71 +29,121 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     api<User>("/auth/me").then(setUser).catch(() => {});
   }, [router]);
 
+  // close the drawer whenever the route changes
+  useEffect(() => setMenuOpen(false), [pathname]);
+
   function logout() {
     clearTokens();
     router.replace("/login");
   }
 
-  return (
-    <div className="flex min-h-screen">
-      <aside className="glass-deep sticky top-0 flex h-screen w-60 flex-col border-r border-white/5">
-        <div className="px-5 py-6">
-          <Link href="/" className="font-display text-xl font-bold tracking-tight text-white">
-            AUR<span className="text-gradient">O</span>RA
-          </Link>
-          <p className="mt-0.5 text-xs uppercase tracking-widest text-slate-400">
-            Workshop console
-          </p>
-        </div>
-        <nav className="flex-1 space-y-1 px-3">
-          {NAV.map((item) => {
-            const active = pathname.startsWith(item.href);
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                className={`flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition ${
-                  active
-                    ? "bg-gradient-to-r from-sky-500/20 to-cyan-400/10 text-sky-200 ring-1 ring-sky-400/30"
-                    : "text-slate-400 hover:bg-white/5 hover:text-white"
-                }`}
+  const sidebar = (
+    <>
+      <div className="px-5 py-6">
+        <Link href="/" className="font-display text-xl font-bold tracking-tight text-white">
+          AUR<span className="text-gradient">O</span>RA
+        </Link>
+        <p className="mt-0.5 text-xs uppercase tracking-widest text-slate-400">
+          Workshop console
+        </p>
+      </div>
+      <nav className="flex-1 space-y-1 px-3">
+        {NAV.map((item) => {
+          const active = pathname.startsWith(item.href);
+          return (
+            <Link
+              key={item.href}
+              href={item.href}
+              className={`flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition ${
+                active
+                  ? "bg-gradient-to-r from-sky-500/20 to-cyan-400/10 text-sky-200 ring-1 ring-sky-400/30"
+                  : "text-slate-400 hover:bg-white/5 hover:text-white"
+              }`}
+            >
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.7"
+                className={`shrink-0 ${active ? "text-sky-300" : ""}`}
+                style={{ width: 18, height: 18 }}
               >
-                <svg
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="1.7"
-                  className={`h-4.5 w-4.5 shrink-0 ${active ? "text-sky-300" : ""}`}
-                  style={{ width: 18, height: 18 }}
-                >
-                  <path strokeLinecap="round" strokeLinejoin="round" d={item.icon} />
-                </svg>
-                {item.label}
-              </Link>
-            );
-          })}
-        </nav>
-        <div className="border-t border-white/5 px-5 py-4">
-          {user && (
-            <div className="mb-3 flex items-center gap-3">
-              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-sky-500 to-cyan-400 text-xs font-bold text-slate-950">
-                {user.full_name.slice(0, 1).toUpperCase()}
-              </div>
-              <div className="min-w-0">
-                <p className="truncate text-xs font-semibold text-slate-200">{user.full_name}</p>
-                <p className="text-[10px] uppercase tracking-widest text-slate-400">{user.role}</p>
-              </div>
+                <path strokeLinecap="round" strokeLinejoin="round" d={item.icon} />
+              </svg>
+              {item.label}
+            </Link>
+          );
+        })}
+      </nav>
+      <div className="border-t border-white/5 px-5 py-4">
+        {user && (
+          <div className="mb-3 flex items-center gap-3">
+            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-sky-500 to-cyan-400 text-xs font-bold text-slate-950">
+              {user.full_name.slice(0, 1).toUpperCase()}
             </div>
-          )}
-          <button
-            onClick={logout}
-            className="text-sm font-medium text-slate-400 transition hover:text-white"
-          >
-            Sign out
-          </button>
+            <div className="min-w-0">
+              <p className="truncate text-xs font-semibold text-slate-200">{user.full_name}</p>
+              <p className="text-[10px] uppercase tracking-widest text-slate-400">{user.role}</p>
+            </div>
+          </div>
+        )}
+        <button
+          onClick={logout}
+          className="text-sm font-medium text-slate-400 transition hover:text-white"
+        >
+          Sign out
+        </button>
+      </div>
+    </>
+  );
+
+  return (
+    <div className="flex min-h-screen flex-col lg:flex-row">
+      {/* mobile top bar */}
+      <header className="glass-deep sticky top-0 z-40 flex items-center justify-between px-4 py-3 lg:hidden">
+        <Link href="/" className="font-display text-lg font-bold tracking-tight text-white">
+          AUR<span className="text-gradient">O</span>RA
+        </Link>
+        <button
+          onClick={() => setMenuOpen((v) => !v)}
+          aria-label="Toggle menu"
+          className="rounded-lg border border-white/15 p-2 text-slate-200"
+        >
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ width: 20, height: 20 }}>
+            {menuOpen ? (
+              <path strokeLinecap="round" d="M6 6l12 12M18 6L6 18" />
+            ) : (
+              <path strokeLinecap="round" d="M4 7h16M4 12h16M4 17h16" />
+            )}
+          </svg>
+        </button>
+      </header>
+
+      {/* mobile drawer */}
+      {menuOpen && (
+        <div className="fixed inset-0 z-50 lg:hidden">
+          <div className="absolute inset-0 bg-black/60" onClick={() => setMenuOpen(false)} />
+          <aside className="glass-deep absolute inset-y-0 left-0 flex w-72 flex-col border-r border-white/10">
+            <button
+              onClick={() => setMenuOpen(false)}
+              aria-label="Close menu"
+              className="absolute right-3 top-4 rounded-lg p-2 text-slate-400 hover:text-white"
+            >
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ width: 18, height: 18 }}>
+                <path strokeLinecap="round" d="M6 6l12 12M18 6L6 18" />
+              </svg>
+            </button>
+            {sidebar}
+          </aside>
         </div>
+      )}
+
+      {/* desktop sidebar */}
+      <aside className="glass-deep sticky top-0 hidden h-screen w-60 flex-col border-r border-white/5 lg:flex">
+        {sidebar}
       </aside>
-      <main className="min-w-0 flex-1 p-8">{children}</main>
+
+      <main className="min-w-0 flex-1 p-4 sm:p-6 lg:p-8">{children}</main>
     </div>
   );
 }

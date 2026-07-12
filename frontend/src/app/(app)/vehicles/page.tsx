@@ -23,6 +23,8 @@ export default function VehiclesPage() {
   const [error, setError] = useState<string | null>(null);
   const [form, setForm] = useState(EMPTY_FORM);
   const [preset, setPreset] = useState("");
+  const [newOwner, setNewOwner] = useState(false);
+  const [owner, setOwner] = useState({ name: "", phone: "" });
 
   const load = useCallback(() => {
     const params = query ? `?q=${encodeURIComponent(query)}` : "";
@@ -31,7 +33,12 @@ export default function VehiclesPage() {
 
   useEffect(load, [load]);
   useEffect(() => {
-    api<Customer[]>("/customers?limit=200").then(setCustomers).catch(() => {});
+    api<Customer[]>("/customers?limit=200")
+      .then((list) => {
+        setCustomers(list);
+        if (list.length === 0) setNewOwner(true);
+      })
+      .catch(() => {});
   }, []);
 
   function applyPreset(value: string) {
@@ -51,10 +58,18 @@ export default function VehiclesPage() {
     e.preventDefault();
     setError(null);
     try {
+      let customerId = Number(form.customer_id);
+      if (newOwner) {
+        const created = await api<Customer>("/customers", {
+          method: "POST",
+          body: JSON.stringify({ name: owner.name, phone: owner.phone }),
+        });
+        customerId = created.id;
+      }
       await api("/vehicles", {
         method: "POST",
         body: JSON.stringify({
-          customer_id: Number(form.customer_id),
+          customer_id: customerId,
           vin: form.vin || null,
           license_plate: form.license_plate,
           make: form.make,
@@ -66,7 +81,10 @@ export default function VehiclesPage() {
       });
       setForm(EMPTY_FORM);
       setPreset("");
+      setOwner({ name: "", phone: "" });
+      setNewOwner(false);
       setShowForm(false);
+      api<Customer[]>("/customers?limit=200").then(setCustomers).catch(() => {});
       load();
     } catch (err) {
       setError(err instanceof ApiError ? err.message : "Request failed");
@@ -104,14 +122,38 @@ export default function VehiclesPage() {
             )}
           </div>
 
+          <div className="mb-4">
+            <div className="mb-2 flex items-center justify-between">
+              <label className="block text-xs font-semibold uppercase tracking-widest text-slate-400">
+                Owner
+              </label>
+              <button
+                type="button"
+                onClick={() => setNewOwner((v) => !v)}
+                className="text-xs font-semibold text-sky-300 hover:text-sky-200"
+              >
+                {newOwner ? "← Pick existing customer" : "+ New customer"}
+              </button>
+            </div>
+            {newOwner ? (
+              <div className="grid grid-cols-2 gap-3">
+                <input className={inputCls} placeholder="Owner name *" required
+                  value={owner.name} onChange={(e) => setOwner({ ...owner, name: e.target.value })} />
+                <input className={inputCls} placeholder="Owner phone *" required
+                  value={owner.phone} onChange={(e) => setOwner({ ...owner, phone: e.target.value })} />
+              </div>
+            ) : (
+              <select className={inputCls} required value={form.customer_id}
+                onChange={(e) => setForm({ ...form, customer_id: e.target.value })}>
+                <option value="">Select owner *</option>
+                {customers.map((c) => (
+                  <option key={c.id} value={c.id}>{c.name} · {c.phone}</option>
+                ))}
+              </select>
+            )}
+          </div>
+
           <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
-            <select className={inputCls} required value={form.customer_id}
-              onChange={(e) => setForm({ ...form, customer_id: e.target.value })}>
-              <option value="">Owner *</option>
-              {customers.map((c) => (
-                <option key={c.id} value={c.id}>{c.name}</option>
-              ))}
-            </select>
             <input className={inputCls} placeholder="License plate *" required
               value={form.license_plate}
               onChange={(e) => setForm({ ...form, license_plate: e.target.value })} />
