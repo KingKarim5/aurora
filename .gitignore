@@ -25,3 +25,6 @@ npm-debug.log*
 .idea/
 Thumbs.db
 .DS_Store
+
+.vercel
+.vercel

@@ -15,4 +15,4 @@ services:
       - key: DATABASE_URL
         sync: false # paste the Neon connection string in the Render dashboard
       - key: CORS_ORIGINS
-        value: '["http://localhost:3000"]' # updated to the Vercel domain after the frontend deploy
+        value: '["https://aurora-pi-sable.vercel.app", "http://localhost:3000"]'
