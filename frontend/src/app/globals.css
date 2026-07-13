@@ -89,6 +89,12 @@ body {
 }
 .animate-beam { animation: beam-sweep 6s ease-in-out infinite; }
 
+@keyframes kenburns {
+  from { transform: scale(1.02); }
+  to { transform: scale(1.12) translate(-1%, -1%); }
+}
+.animate-kenburns { animation: kenburns 7s ease-out both; }
+
 @keyframes marquee {
   from { transform: translateX(0); }
   to { transform: translateX(-50%); }

@@ -1,52 +1,73 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { CAR_CATALOG } from "@/lib/cars";
-import { CarArt } from "@/components/car-art";
 
-const SHOWROOM_MODELS = ["Corolla Cross", "Premio", "Civic", "CR-V"];
+const SHOWROOM_MODELS = ["Premio", "Corolla Cross", "CR-V", "Civic"];
 
-/** Pseudo-3D turntable: auto-rotates, drag to spin. */
-export function Showroom360() {
-  const models = CAR_CATALOG.filter((c) => SHOWROOM_MODELS.includes(c.model));
+/** Real-photo showroom: crossfading stage with a slow cinematic zoom. */
+export function Showroom() {
+  const models = CAR_CATALOG.filter((c) => SHOWROOM_MODELS.includes(c.model) && c.photo);
   const [active, setActive] = useState(0);
-  const [angle, setAngle] = useState(-18);
-  const dragging = useRef<{ x: number; angle: number } | null>(null);
-  const velocity = useRef(0.25);
 
+  // auto-advance every 6s
   useEffect(() => {
-    let raf: number;
-    function spin() {
-      if (!dragging.current) setAngle((a) => a + velocity.current);
-      raf = requestAnimationFrame(spin);
-    }
-    raf = requestAnimationFrame(spin);
-    return () => cancelAnimationFrame(raf);
-  }, []);
+    const t = setInterval(() => setActive((a) => (a + 1) % models.length), 6000);
+    return () => clearInterval(t);
+  }, [models.length]);
 
-  function onPointerDown(e: React.PointerEvent) {
-    (e.target as HTMLElement).setPointerCapture(e.pointerId);
-    dragging.current = { x: e.clientX, angle };
-  }
-  function onPointerMove(e: React.PointerEvent) {
-    if (!dragging.current) return;
-    setAngle(dragging.current.angle + (e.clientX - dragging.current.x) * 0.5);
-  }
-  function onPointerUp() {
-    dragging.current = null;
-  }
-
+  if (models.length === 0) return null;
   const car = models[active];
-  if (!car) return null;
-
-  // flatten the silhouette as it turns edge-on, flip past 90°
-  const rad = (angle * Math.PI) / 180;
-  const flat = Math.cos(rad);
 
   return (
-    <div className="glass overflow-hidden rounded-3xl p-6 md:p-10">
+    <div className="glass overflow-hidden rounded-3xl">
+      {/* photo stage */}
+      <div className="relative aspect-[16/10] overflow-hidden md:aspect-[21/9]">
+        {models.map((m, i) => (
+          <img
+            key={m.model}
+            src={m.photo}
+            alt={`${m.make} ${m.model}`}
+            className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-1000 ${
+              i === active ? "animate-kenburns opacity-100" : "opacity-0"
+            }`}
+          />
+        ))}
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/30" />
+
+        {/* prev / next */}
+        <button
+          aria-label="Previous car"
+          onClick={() => setActive((a) => (a - 1 + models.length) % models.length)}
+          className="absolute left-4 top-1/2 -translate-y-1/2 rounded-full border border-white/20 bg-black/40 p-2.5 text-white backdrop-blur transition hover:bg-black/70"
+        >
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" style={{ width: 18, height: 18 }}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+          </svg>
+        </button>
+        <button
+          aria-label="Next car"
+          onClick={() => setActive((a) => (a + 1) % models.length)}
+          className="absolute right-4 top-1/2 -translate-y-1/2 rounded-full border border-white/20 bg-black/40 p-2.5 text-white backdrop-blur transition hover:bg-black/70"
+        >
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" style={{ width: 18, height: 18 }}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+          </svg>
+        </button>
+
+        {/* car label */}
+        <div className="absolute bottom-0 left-0 p-6 md:p-8">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.3em] text-sky-300">
+            {car.defaultYear} · {car.fuel} · {car.body}
+          </p>
+          <p className="font-display mt-1 text-3xl font-bold text-white md:text-4xl">
+            {car.make} {car.model}
+          </p>
+        </div>
+      </div>
+
       {/* model tabs */}
-      <div className="mb-8 flex flex-wrap items-center gap-2">
+      <div className="flex flex-wrap items-center gap-2 p-5 md:p-6">
         {models.map((m, i) => (
           <button
             key={m.model}
@@ -60,62 +81,8 @@ export function Showroom360() {
             {m.make} {m.model}
           </button>
         ))}
-      </div>
-
-      {/* stage */}
-      <div
-        className="relative mx-auto flex h-64 max-w-lg cursor-grab touch-none select-none items-end justify-center active:cursor-grabbing md:h-72"
-        style={{ perspective: 900 }}
-        onPointerDown={onPointerDown}
-        onPointerMove={onPointerMove}
-        onPointerUp={onPointerUp}
-        onPointerCancel={onPointerUp}
-      >
-        {/* rotating platform */}
-        <div
-          className="absolute bottom-4 left-1/2 h-24 w-[130%] -translate-x-1/2 rounded-[100%] border border-sky-400/20"
-          style={{
-            transform: `translateX(-50%) rotateX(72deg) rotate(${angle}deg)`,
-            background:
-              "radial-gradient(closest-side, rgba(56,189,248,0.12), rgba(56,189,248,0.03) 60%, transparent)",
-          }}
-        >
-          <div className="absolute inset-3 rounded-[100%] border border-dashed border-white/10" />
-        </div>
-
-        {/* car */}
-        <div
-          className="relative mb-8 w-full max-w-md will-change-transform"
-          style={{ transform: `scaleX(${flat < 0 ? Math.min(flat, -0.12) : Math.max(flat, 0.12)})` }}
-        >
-          <CarArt body={car.body} from={car.from} to={car.to} className="w-full drop-shadow-[0_20px_40px_rgba(56,189,248,0.25)]" />
-          {/* reflection */}
-          <div
-            className="pointer-events-none absolute left-0 top-full w-full -scale-y-100 opacity-20"
-            style={{
-              maskImage: "linear-gradient(to top, transparent 55%, black)",
-              WebkitMaskImage: "linear-gradient(to top, transparent 55%, black)",
-            }}
-          >
-            <CarArt body={car.body} from={car.from} to={car.to} className="w-full" />
-          </div>
-        </div>
-      </div>
-
-      <div className="mt-2 flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <p className="font-display text-xl font-bold text-white">
-            {car.make} {car.model}
-          </p>
-          <p className="text-sm text-slate-400 capitalize">
-            {car.defaultYear} · {car.fuel} · {car.body}
-          </p>
-        </div>
-        <p className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.2em] text-sky-300">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" style={{ width: 16, height: 16 }}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M16 15v-1a4 4 0 00-4-4H8m0 0l3 3m-3-3l3-3m5 13a9 9 0 10-9-9" />
-          </svg>
-          Drag to rotate · 360°
+        <p className="ml-auto hidden text-xs text-slate-500 sm:block">
+          Real photography · true 360° spins of our floor cars coming with our own footage
         </p>
       </div>
     </div>

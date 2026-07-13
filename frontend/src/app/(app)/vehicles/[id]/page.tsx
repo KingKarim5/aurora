@@ -75,22 +75,32 @@ export default function VehicleDetailPage({ params }: { params: Promise<{ id: st
 
   return (
     <div>
-      <div
-        className="glass mb-6 flex flex-col items-center gap-2 overflow-hidden rounded-2xl p-6 sm:flex-row sm:gap-8"
-        style={{ background: `linear-gradient(120deg, ${art.from}12, ${art.to}08)` }}
-      >
-        <CarArt body={art.body} from={art.from} to={art.to} className="w-56 shrink-0" />
-        <div>
-          <h1 className="font-display text-2xl font-bold tracking-tight text-white">
-            {vehicle.year} {vehicle.make} {vehicle.model}
-          </h1>
-          <div className="mt-2 flex flex-wrap items-center gap-3 text-sm text-slate-400">
-            <span className="rounded-full border border-white/15 bg-black/30 px-3 py-0.5 font-mono text-xs font-bold tracking-wider text-slate-200">
-              {vehicle.license_plate}
-            </span>
-            <span className="capitalize">{vehicle.fuel_type}</span>
-            <span>{vehicle.mileage_km.toLocaleString()} km</span>
-            <Badge value={twin.status} />
+      <div className="glass relative mb-6 overflow-hidden rounded-2xl">
+        {art.photo ? (
+          <>
+            <img src={art.photo} alt="" className="absolute inset-0 h-full w-full object-cover" />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/40 to-black/20" />
+          </>
+        ) : (
+          <div
+            className="absolute inset-0"
+            style={{ background: `linear-gradient(120deg, ${art.from}12, ${art.to}08)` }}
+          />
+        )}
+        <div className="relative flex flex-col items-center gap-2 p-6 sm:flex-row sm:gap-8">
+          {!art.photo && <CarArt body={art.body} from={art.from} to={art.to} className="w-56 shrink-0" />}
+          <div className={art.photo ? "py-10" : undefined}>
+            <h1 className="font-display text-2xl font-bold tracking-tight text-white">
+              {vehicle.year} {vehicle.make} {vehicle.model}
+            </h1>
+            <div className="mt-2 flex flex-wrap items-center gap-3 text-sm text-slate-300">
+              <span className="rounded-full border border-white/15 bg-black/30 px-3 py-0.5 font-mono text-xs font-bold tracking-wider text-slate-200">
+                {vehicle.license_plate}
+              </span>
+              <span className="capitalize">{vehicle.fuel_type}</span>
+              <span>{vehicle.mileage_km.toLocaleString()} km</span>
+              <Badge value={twin.status} />
+            </div>
           </div>
         </div>
       </div>

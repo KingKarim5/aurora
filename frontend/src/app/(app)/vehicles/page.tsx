@@ -118,7 +118,15 @@ export default function VehiclesPage() {
               ))}
             </select>
             {previewArt && (
-              <CarArt body={previewArt.body} from={previewArt.from} to={previewArt.to} className="w-28 shrink-0" />
+              previewArt.photo ? (
+                <img
+                  src={previewArt.photo}
+                  alt=""
+                  className="h-16 w-28 shrink-0 rounded-lg object-cover"
+                />
+              ) : (
+                <CarArt body={previewArt.body} from={previewArt.from} to={previewArt.to} className="w-28 shrink-0" />
+              )
             )}
           </div>
 
@@ -201,20 +209,33 @@ export default function VehiclesPage() {
                 className="glass group rounded-2xl p-5 transition duration-200 hover:-translate-y-1 hover:shadow-[0_16px_48px_-16px_rgba(56,189,248,0.35)]"
               >
                 <div
-                  className="relative mb-4 rounded-xl px-4 pt-3"
+                  className="relative mb-4 overflow-hidden rounded-xl"
                   style={{
                     background: `linear-gradient(135deg, ${art.from}14, ${art.to}0a)`,
                   }}
                 >
-                  <span className="absolute right-3 top-3 rounded-full border border-white/15 bg-black/30 px-2.5 py-0.5 font-mono text-xs font-bold tracking-wider text-slate-200">
+                  <span className="absolute right-3 top-3 z-10 rounded-full border border-white/15 bg-black/40 px-2.5 py-0.5 font-mono text-xs font-bold tracking-wider text-slate-200">
                     {v.license_plate}
                   </span>
-                  <CarArt
-                    body={art.body}
-                    from={art.from}
-                    to={art.to}
-                    className="mx-auto w-full max-w-[240px] transition duration-300 group-hover:scale-[1.04]"
-                  />
+                  {art.photo ? (
+                    <div className="aspect-[16/9]">
+                      <img
+                        src={art.photo}
+                        alt={`${v.make} ${v.model}`}
+                        loading="lazy"
+                        className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
+                      />
+                    </div>
+                  ) : (
+                    <div className="px-4 pt-3">
+                      <CarArt
+                        body={art.body}
+                        from={art.from}
+                        to={art.to}
+                        className="mx-auto w-full max-w-[240px] transition duration-300 group-hover:scale-[1.04]"
+                      />
+                    </div>
+                  )}
                 </div>
                 <p className="font-display text-lg font-semibold text-white">
                   {v.make} {v.model}

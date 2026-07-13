@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { LazyVideo, Reveal, TiltCard } from "@/components/motion";
 import { Logo } from "@/components/logo";
-import { Showroom360 } from "@/components/showroom360";
+import { Showroom } from "@/components/showroom360";
 
 /* Unsplash-hosted photography (free license). */
 const IMG = {
@@ -90,7 +90,7 @@ export default function LandingPage() {
           <Logo />
           <nav className="hidden items-center gap-10 text-xs font-semibold uppercase tracking-[0.18em] text-slate-300 md:flex">
             <a href="#showcase" className="transition hover:text-white">Platform</a>
-            <a href="#showroom" className="transition hover:text-white">360° Showroom</a>
+            <a href="#showroom" className="transition hover:text-white">Showroom</a>
             <Link href="/shop" className="text-sky-300 transition hover:text-white">Parts Shop</Link>
             <a href="#visit" className="transition hover:text-white">Visit</a>
           </nav>
@@ -233,19 +233,19 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* 360 showroom */}
+      {/* showroom */}
       <section id="showroom" className="mx-auto max-w-7xl px-6 pb-24">
         <Reveal>
-          <p className="text-xs font-semibold uppercase tracking-[0.3em] text-sky-300">360° showroom</p>
+          <p className="text-xs font-semibold uppercase tracking-[0.3em] text-sky-300">The showroom</p>
           <h2 className="font-display mt-3 max-w-2xl text-3xl font-bold text-white md:text-5xl">
             The cars we know inside out
           </h2>
           <p className="mt-3 max-w-xl text-slate-400">
-            Corolla Cross, Premio, Civic, CR-V — the backbone of the Bangladeshi road. Spin them.
+            Premio, Corolla Cross, CR-V, Civic — the backbone of the Bangladeshi road.
           </p>
         </Reveal>
         <Reveal delay={150} className="mt-10">
-          <Showroom360 />
+          <Showroom />
         </Reveal>
       </section>
 
