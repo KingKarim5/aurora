@@ -13,6 +13,7 @@ from app.api.routes import (
     invoices,
     job_cards,
     parts,
+    shop,
     vehicles,
 )
 from app.core.config import get_settings
@@ -51,6 +52,7 @@ app.add_middleware(
 )
 
 app.include_router(auth.router, prefix=settings.api_v1_prefix)
+app.include_router(shop.router, prefix=settings.api_v1_prefix)  # public storefront
 
 # Everything operational is staff-only; customer accounts stop at auth.
 for router in (

@@ -126,6 +126,16 @@ def test_google_login_creates_customer_account(client, google_enabled, google_cl
     assert me["full_name"] == "New Mechanic"
 
 
+def test_shop_parts_is_public(client):
+    resp = client.get("/api/v1/shop/parts")
+    assert resp.status_code == 200
+    parts = resp.json()
+    assert len(parts) >= 30
+    suppliers = {p["supplier"] for p in parts}
+    assert "HKS" in suppliers  # aftermarket present
+    assert any("Genuine" in (s or "") for s in suppliers)
+
+
 def test_customer_role_cannot_reach_workshop_routes(client, google_enabled, google_claims):
     token = client.post("/api/v1/auth/google", json={"credential": "valid-token"}).json()[
         "access_token"

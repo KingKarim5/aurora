@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { LazyVideo, Reveal, TiltCard } from "@/components/motion";
 import { Logo } from "@/components/logo";
+import { Showroom360 } from "@/components/showroom360";
 
 /* Unsplash-hosted photography (free license). */
 const IMG = {
@@ -89,7 +90,8 @@ export default function LandingPage() {
           <Logo />
           <nav className="hidden items-center gap-10 text-xs font-semibold uppercase tracking-[0.18em] text-slate-300 md:flex">
             <a href="#showcase" className="transition hover:text-white">Platform</a>
-            <a href="#twin" className="transition hover:text-white">Digital Twin</a>
+            <a href="#showroom" className="transition hover:text-white">360° Showroom</a>
+            <Link href="/shop" className="text-sky-300 transition hover:text-white">Parts Shop</Link>
             <a href="#visit" className="transition hover:text-white">Visit</a>
           </nav>
           <Link
@@ -231,6 +233,37 @@ export default function LandingPage() {
         </div>
       </section>
 
+      {/* 360 showroom */}
+      <section id="showroom" className="mx-auto max-w-7xl px-6 pb-24">
+        <Reveal>
+          <p className="text-xs font-semibold uppercase tracking-[0.3em] text-sky-300">360° showroom</p>
+          <h2 className="font-display mt-3 max-w-2xl text-3xl font-bold text-white md:text-5xl">
+            The cars we know inside out
+          </h2>
+          <p className="mt-3 max-w-xl text-slate-400">
+            Corolla Cross, Premio, Civic, CR-V — the backbone of the Bangladeshi road. Spin them.
+          </p>
+        </Reveal>
+        <Reveal delay={150} className="mt-10">
+          <Showroom360 />
+        </Reveal>
+      </section>
+
+      {/* brand marquee */}
+      <section className="overflow-hidden border-y border-white/5 bg-white/[0.02] py-6">
+        <div className="animate-marquee flex w-max items-center gap-14">
+          {[...Array(2)].map((_, dup) => (
+            <div key={dup} className="flex items-center gap-14" aria-hidden={dup === 1}>
+              {["TOYOTA", "HONDA", "NISSAN", "HYUNDAI", "MITSUBISHI", "LEXUS", "HKS", "NISMO", "MUGEN", "TEIN", "CUSCO", "K&N"].map((b) => (
+                <span key={b} className="font-display text-lg font-bold tracking-[0.25em] text-slate-600">
+                  {b}
+                </span>
+              ))}
+            </div>
+          ))}
+        </div>
+      </section>
+
       {/* parallax stat band */}
       <section
         className="relative bg-cover bg-center bg-fixed py-28"
@@ -316,9 +349,9 @@ export default function LandingPage() {
       <section id="platform" className="border-y border-white/5 bg-white/[0.02] py-20">
         <div className="mx-auto grid max-w-7xl gap-10 px-6 md:grid-cols-3">
           {[
-            ["Workshop ERP", "Customers, vehicles, appointments and job cards with a real status state machine — illegal transitions are impossible."],
-            ["Billing that adds up", "Invoices with tax, partial payments and voiding, generated straight from completed job cards. Cent-accurate."],
-            ["Roles & security", "JWT + Google sign-in, with admin / manager / mechanic permissions enforced on every route."],
+            ["Wash with every service", "Every job leaves through the wash bay — your car comes back better than it arrived, inside and out."],
+            ["Genuine parts guarantee", "OEM and genuine lines for Toyota, Honda, Nissan, Hyundai and Mitsubishi — plus JDM performance brands, all in stock."],
+            ["Transparent billing", "Itemised invoices straight from the job card — parts, labor and tax, cent-accurate. Pay in full or in parts."],
           ].map(([t, b], i) => (
             <Reveal key={t} delay={i * 100}>
               <p className="font-display border-l-2 border-sky-400 pl-4 text-lg font-semibold text-white">{t}</p>

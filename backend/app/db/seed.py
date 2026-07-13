@@ -179,6 +179,22 @@ PARTS_CATALOG = [
     ("SNS-O2-DN01", "Oxygen sensor — Denso 89465 series", "Sensors", 7, "54.00", 3, "Denso"),
     ("AC-GAS-134A", "AC refrigerant R-134a (450 g)", "AC", 20, "11.00", 6, "Honeywell"),
     ("CV-BOOT-T01", "CV joint boot kit — Toyota FWD", "Drivetrain", 15, "8.50", 5, "Maruichi"),
+    # Genuine lines for the wider BD fleet
+    ("FLT-OIL-HY1", "Oil filter — Hyundai 26300-35505", "Filters", 18, "5.00", 6, "Hyundai"),
+    ("BRK-PAD-HY1", "Front brake pads — Tucson/Creta", "Brakes", 8, "34.00", 3, "Hyundai"),
+    ("FLT-OIL-MT1", "Oil filter — Mitsubishi MD135737", "Filters", 14, "5.50", 5, "Mitsubishi"),
+    ("GLW-PLG-MT1", "Glow plug — Pajero 4M41 diesel", "Ignition", 12, "19.00", 4, "Mitsubishi"),
+    ("FLT-AIR-N01", "Air filter — X-Trail 16546-4BA1B", "Filters", 10, "12.00", 4, "Nissan"),
+    ("PAD-BRK-N01", "Front brake pads — X-Trail set", "Brakes", 8, "38.00", 3, "Nissan"),
+    # JDM aftermarket / performance
+    ("AFT-HKS-AF1", "HKS Super Air Filter — panel", "Aftermarket", 10, "42.00", 3, "HKS"),
+    ("AFT-KNN-A33", "K&N 33-series drop-in air filter", "Aftermarket", 12, "58.00", 4, "K&N"),
+    ("AFT-PMU-B01", "Project Mu B-Force pads — front", "Aftermarket", 6, "128.00", 2, "Project Mu"),
+    ("AFT-CSC-SB1", "Cusco strut bar — Corolla/Axio", "Aftermarket", 4, "115.00", 2, "Cusco"),
+    ("AFT-BLZ-BOV", "Blitz blow-off valve", "Aftermarket", 3, "165.00", 1, "Blitz"),
+    ("AFT-TEN-D01", "Tein shock set — Premio/Allion", "Aftermarket", 3, "310.00", 1, "Tein"),
+    ("AFT-MUG-M01", "Mugen oil filler cap — Honda", "Aftermarket", 8, "36.00", 2, "Mugen"),
+    ("AFT-NIS-S01", "Nismo engine oil 5W-30 (4 L)", "Aftermarket", 10, "52.00", 3, "Nismo"),
 ]
 
 
